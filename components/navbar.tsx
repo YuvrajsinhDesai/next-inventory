@@ -1,6 +1,7 @@
 "use client"
 
-import { Bell, Search, Sun, Moon, Menu } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { Bell, Search, Sun, Moon, Menu, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -10,9 +11,42 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { useTheme } from "next-themes"
+import { supabase } from "@/lib/supabase/client"
+import { toast } from "sonner"
 
 export default function Navbar() {
   const { setTheme } = useTheme()
+  const router = useRouter()
+
+  const handleSignOut = async () => {
+    try {
+      // First check if we have a valid session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      if (sessionError) throw sessionError
+
+      // If no session, just redirect to landing page
+      if (!session) {
+        router.replace('/')
+        return
+      }
+
+      // Attempt to sign out
+      const { error } = await supabase.auth.signOut()
+      if (error) throw error
+      toast.success("Signed out successfully")
+      router.replace('/')
+     
+    } catch (error: any) {
+      console.error('Sign out error:', error)
+      
+      // Always redirect to landing page on error to prevent being stuck
+      router.replace('/')
+      
+      toast.error("Error during sign out", {
+        description: error.message || "Please try again"
+      })
+    }
+  }
 
   return (
     <div className="border-b sticky top-0 bg-background z-30">
@@ -47,12 +81,24 @@ export default function Navbar() {
             </DropdownMenuContent>
           </DropdownMenu>
           <Button variant="ghost" size="icon" className="h-8 w-8">
-            <Bell className="h-5 w-5" />
+            <Bell className="h-5 w-4" />
             <span className="sr-only">Notifications</span>
           </Button>
-          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-            <span className="text-sm font-medium">A</span>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <span className="text-sm font-medium">A</span>
+                </div>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleSignOut}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
       <div className="sm:hidden px-4 pb-4">

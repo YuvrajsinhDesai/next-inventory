@@ -14,15 +14,20 @@ import {
   ChevronRight,
   ShoppingCart,
   BarChart3,
-  LogOut,
-  Menu
+  Menu,
+  Truck,
+  TrendingUp,
+  DollarSign
 } from 'lucide-react'
 
 const sidebarItems = [
-  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Inventory', href: '/inventory', icon: Package },
+  { name: 'Financial Reports', href: '/inventory/financial', icon: DollarSign },
   { name: 'Orders', href: '/orders', icon: ShoppingCart },
   { name: 'Customers', href: '/customers', icon: Users },
+  { name: 'Suppliers', href: '/suppliers', icon: Truck },
+  { name: 'Supplier Performance', href: '/suppliers/performance', icon: TrendingUp },
   { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'Settings', href: '/settings', icon: Settings },
 ]
@@ -105,26 +110,6 @@ export default function Sidebar() {
               })}
             </ul>
           </nav>
-
-          <div className="border-t pt-4">
-            <Button
-              variant="ghost"
-              className={cn(
-                "w-full justify-start",
-                "flex md:justify-center",
-                expanded && "md:justify-start"
-              )}
-            >
-              <LogOut className="h-5 w-5 shrink-0" />
-              <span className={cn(
-                "ml-3 transition-all duration-300",
-                "block md:hidden", // Always show on mobile
-                expanded ? "md:block md:opacity-100" : "md:hidden md:opacity-0 md:w-0" // Toggle on desktop
-              )}>
-                Logout
-              </span>
-            </Button>
-          </div>
         </div>
       </aside>
 
